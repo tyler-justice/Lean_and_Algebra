@@ -22,7 +22,7 @@ Lean とは何か
 Lean の特徴
 - 関数型」プログラミング : プログラムは項と関数からなる.
 - 項にはすべて「型」がある.
-- 項から項に対応をつけるのが Lean の関数
+- 型から型に対応をつけるのが Lean の関数
 -/
 
 /-
@@ -62,7 +62,7 @@ example (名前 : 省略可) 仮定の項 : 主張の項 := 詳細
   - 例 : 定理と同じで仮定の項を主張の項に変換する「関数」を記述する.
 -/
 
-/- 以下の (a b c : ℝ ) は a b c は型 ℝ を持つという意味. この「型」の概念は言葉で説明するのが難しい. 四回の講義で感覚を掴んでもらいたい. とりあえず (a b c : ℝ) は a,b,c ∈ ℝ と考えて欲しい-/
+/- 以下の (a b c : ℝ ) は a b c は型 ℝ を持つという意味. この「型」の概念は言葉で説明するのが難しい. とりあえず (a b c : ℝ) は a,b,c ∈ ℝ と考えて欲しい-/
 
 /-
  Lean では演算は左結合である. すなわち
@@ -77,4 +77,61 @@ example (a b c : ℝ) : a * b * c = b * (a * c) := by
   rw [mul_assoc b a c]
 
 example (a b c : ℝ) : c * b * a = b * (a * c) := by
+  sorry
+
+example (a b : ℝ) : (a + b) * (a + b) = a * a + 2 * (a * b) + b * b := by
+  rw [mul_add, add_mul, add_mul]
+  rw [← add_assoc, add_assoc (a * a)]
+  rw [mul_comm b a, ← two_mul]
+
+
+
+example (a b : ℝ) : (a + b) * (a + b) = a * a + 2 * (a * b) + b * b :=
+  calc
+    (a + b) * (a + b) = a * a + b * a + (a * b + b * b) := by
+      rw [mul_add, add_mul, add_mul]
+    _ = a * a + (b * a + a * b) + b * b := by
+      rw [← add_assoc, add_assoc (a * a)]
+    _ = a * a + 2 * (a * b) + b * b := by
+      rw [mul_comm b a, ← two_mul]
+
+variable (a b c : ℝ)
+
+  /- rewrite で示す -/
+example : (a - b)^2 = a^2 - 2*a*b + b^2 := by sorry
+
+/- calc を使う -/
+example : (a - b)^2 = a^2 - 2*a*b + b^2 := by sorry
+
+/- 課題 -/
+example  : a^2 - b^2 = (a -b)*(a + b) := by sorry
+
+
+/- Lean ではすべての証明は等価なものとして扱われる. つまり, 上の example を ring で済ませても 結合律などを丁寧に適用してやっても同じとみなす. -/
+
+
+
+/- 課題 -/
+
+example : (a + b + c)*(a^2 + b^2 + c^2 - a - b -c) = a^3 + b^3 + c^3 - 3*a*b*c := by
+  sorry
+
+/- 仮定を利用する -/
+example (d : ℝ ) (hyp : c = d * a + b) (hyp' : b = a * d) : c = 2 * a * d := by
+  rw [hyp, hyp']
+  ring
+
+
+variable (x y : ℝ)
+
+example (h : 2*x + 1 = 3) : x = 1 := by
+  calc
+    _  = (1/2)*(2*x + 1) - 1/2 := by ring
+    _  = (1/2)*3 - 1/2 := by rw [h]
+    _ = 1 := by norm_num
+
+example (h1 : 2 * x - y = 4) (h2 : y - x + 1 = 2) : x = 5 := by
+  sorry
+
+example (h1 : 2 * x - y = 4) (h2 : y - x + 1 = 2) : y = 6 := by
   sorry
