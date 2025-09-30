@@ -47,6 +47,10 @@ Answer
   Lean ver.3 で ZFC の公理を記述出来るので, 定理 A とその否定が共に Lean で証明出来る, すなわち Lean は無矛盾ではない. Lean と ZFC + 到達不可能基数の存在の無矛盾性の等価性から ZFC + 到達不可能基数も無矛盾ではないことがわかる.
 -/
 
+/-
+  講義の目標. Leancommunity のページの Mathlib のページから定義に飛んで, 参照されているファイルを理解出来るようになる. 今回の講義はこれを主に代数について行う.
+-/
+
 
 /-
 Lean での定理, 定義, 例などの読み方
@@ -98,7 +102,15 @@ example (a b : ℝ) : (a + b) * (a + b) = a * a + 2 * (a * b) + b * b :=
 variable (a b c : ℝ)
 
   /- rewrite で示す -/
-example : (a - b)^2 = a^2 - 2*a*b + b^2 := by sorry
+example : (a - b)^2 = a^2 - 2*a*b + b^2 := by
+  rw [pow_two]
+  rw [mul_sub, sub_mul,sub_mul]
+  rw [← sub_add]
+  rw [mul_comm b a]
+  rw [pow_two,pow_two]
+  rw [sub_sub, ←two_mul, mul_assoc]
+
+#loogle "neg"
 
 /- calc を使う -/
 example : (a - b)^2 = a^2 - 2*a*b + b^2 := by sorry
@@ -111,7 +123,7 @@ example  : a^2 - b^2 = (a -b)*(a + b) := by sorry
 
 
 
-/- 課題 -/
+/- ring がどのくらいのものを処理出来るか? -/
 
 example : (a + b + c)*(a^2 + b^2 + c^2 - a - b -c) = a^3 + b^3 + c^3 - 3*a*b*c := by
   sorry
@@ -135,3 +147,45 @@ example (h1 : 2 * x - y = 4) (h2 : y - x + 1 = 2) : x = 5 := by
 
 example (h1 : 2 * x - y = 4) (h2 : y - x + 1 = 2) : y = 6 := by
   sorry
+
+example (a b c : ℝ) : min (min a b) c = min a (min b c) := by
+  apply le_antisymm
+--  have h : min a b ≤ a := by exact min_le_left a b
+  {
+   apply le_min
+   {
+    apply le_trans
+    show min (min a b) c ≤ min a b
+    apply min_le_left
+    apply min_le_left
+   }
+   {
+    apply le_min
+    {
+      apply le_trans
+      show min (min a b) c ≤ min a b
+      apply min_le_left
+      apply min_le_right
+    }
+    {
+      apply min_le_right
+    }
+   }
+  }
+  {
+    apply le_min
+    {
+      apply le_min
+      apply min_le_left
+      apply le_trans
+      show min a (min b c) ≤ min b c
+      apply min_le_right
+      apply min_le_left
+    }
+    {
+      apply le_trans
+      show min a (min b c) ≤   min b c
+      apply min_le_right
+      apply min_le_right
+    }
+  }
