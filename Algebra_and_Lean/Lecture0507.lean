@@ -42,8 +42,6 @@ Answer
 
 
 
-section
-
 /-
 Lean での定理, 定義, 例などの読み方
 - Lean での定理等は以下のような形をしている.
@@ -112,13 +110,21 @@ example : (a - b)^2 = a^2 - 2*a*b + b^2 := by sorry
 example : (a - b)^2 = a^2 - 2*a*b + b^2 := by sorry
 
 /- 課題 -/
-example  : a^2 - b^2 = (a -b)*(a + b) := by sorry
+example  : a^2 - b^2 = (a -b)*(a + b) := by ring
 
 
 /- 課題 -/
 
 example : (a + b + c)*(a^2 + b^2 + c^2 - a - b -c) = a^3 + b^3 + c^3 - 3*a*b*c := by
   sorry
+
+/- Lean ではすべての証明は等価なものとして扱われる. つまり, 上の example を ring で済ませても 結合律などを丁寧に適用してやっても同じとみなす. -/
+
+/- 仮定を利用する -/
+example (d : ℝ ) (hyp : c = d * a + b) (hyp' : b = a * d) : c = 2 * a * d := by
+  rw [hyp, hyp']
+  ring
+
 
 variable (x y : ℝ)
 
@@ -148,8 +154,7 @@ example (h1 : x^2 - 3*x + 2 = 0) : x = 1 ∨ x = 2 := by
   · right
     exact eq_of_sub_eq_zero B
 
-example (h1 : a*x^2 + b*x + c = 0) (h2 : a ≠ 0): x = (-b + √(b^2 - 4*a*c))/2 ∨ x = (-b - √(b^2 - 4*a*c))/2 := by
-  sorry
+example (h1 : a*x^2 + b*x + c = 0) (h2 : a ≠ 0): x = (-b + √(b^2 - 4*a*c))/2 ∨ x = (-b - √(b^2 - 4*a*c))/2 := by sorry
 
 
 example (h1 : x^3 - 6*x^2 + 11*x -6 = 0) : x = 1 ∨ x = 2 ∨ x = 3 := by sorry
@@ -159,6 +164,3 @@ example (h1 : x^3 - 6*x^2 + 11*x -6 = 0) : x = 1 ∨ x = 2 ∨ x = 3 := by sorry
   式変形する適切な関数をどのように見つけるか? は Lean をこれまで五年間扱ってきてもまだ有効な方法がわからない.
   Loogle
 -/
-
-
-end
